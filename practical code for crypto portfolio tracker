@@ -1,0 +1,147 @@
+transactions = [
+    {
+        "symbol": "BTC",
+        "type": "buy",
+        "quantity": 0.7,
+        "price": 27090.4,
+        "date": "2022-03-07",
+    },
+    {
+        "symbol": "BTC",
+        "type": "sell",
+        "quantity": 0.1,
+        "price": 26561.4,
+        "date": "2022-04-12",
+    },
+    {
+        "symbol": "BTC",
+        "type": "buy",
+        "quantity": 0.4,
+        "price": 28090.4,
+        "date": "2022-05-21",
+    },
+    {
+        "symbol": "BTC",
+        "type": "buy",
+        "quantity": 0.3,
+        "price": 25090.4,
+        "date": "2022-06-02",
+    },
+    {
+        "symbol": "BTC",
+        "type": "sell",
+        "quantity": 0.5,
+        "price": 32034.67,
+        "date": "2022-06-29",
+    },
+    {
+        "symbol": "ETH",
+        "type": "buy",
+        "quantity": 6,
+        "price": 1754,
+        "date": "2022-05-21",
+    },
+    {
+        "symbol": "ETH",
+        "type": "buy",
+        "quantity": 2,
+        "price": 1950,
+        "date": "2022-06-02",
+    },
+    {
+        "symbol": "ETH",
+        "type": "sell",
+        "quantity": 3,
+        "price": 2100.67,
+        "date": "2022-06-29",
+    },
+]
+
+
+    # 1. Create a dictionary with keys for each of the cryptocurrencies present in the transactions
+
+portfolio = {}
+for transaction in transactions:
+    symbol = transaction["symbol"]
+    if symbol not in portfolio:
+        portfolio[symbol] = []
+
+print(portfolio)   
+
+# 2. Add to the dictionary a key "quantity" which has as its value the quantity still present in the portfolio:
+for transaction in transactions:
+    symbol = transaction["symbol"]
+    if "quantity" not in portfolio[symbol]:
+        portfolio[symbol] = {"quantity": 0}
+    if transaction["type"] == "buy":
+        portfolio[symbol]["quantity"] += transaction["quantity"]
+    elif transaction["type"] == "sell":
+        portfolio[symbol]["quantity"] -= transaction["quantity"]
+
+print(portfolio)
+
+
+# 3. Add our PNL for each of the cryptos
+
+today_prices = {"BTC": 35000, "ETH": 2400}
+
+for symbol, data in portfolio.items():
+    current_value = data["quantity"] * today_prices[symbol]
+    total_cost = sum([t["price"]*t["quantity"] for t in transactions if t["symbol"] == symbol and t["type"] == "buy"])
+    data["PNL"] = current_value - total_cost
+    
+print(portfolio)
+
+
+# 4. Add to the dictionary the average purchase price for each of the cryptos
+
+for symbol in portfolio:
+    total_quantity = sum([t["quantity"] for t in transactions if t["symbol"] == symbol and t["type"] == "buy"])
+    total_cost = sum([t["price"]*t["quantity"] for t in transactions if t["symbol"] == symbol and t["type"] == "buy"])
+    avg_price = total_cost / total_quantity 
+    portfolio[symbol]["avg_price"] = avg_price
+    
+print(portfolio)    
+
+
+# Bonus: Display the quantity purchased on or after the date of 2022-06-02
+import datetime
+
+date_from = datetime.datetime.strptime("2022-06-02", "%Y-%m-%d")
+
+# Dictionary to hold the total purchased qities for each crypto from the given date
+purchased_quantities = {}
+
+for transaction in transactions:
+    date_of_transaction = datetime.datetime.strptime(transaction["date"], "%Y-%m-%d")
+    
+    if date_of_transaction >= date_from and transaction["type"] == "buy":     # Note the change to '>='
+      # Add or update the quantity for the cryptocurrency in the dictionary
+      purchased_quantities[transaction["symbol"]] = purchased_quantities.get(transaction["symbol"], 0) + transaction["quantity"]  
+      
+# Print the accumulated quantities
+for symbol, quantity in purchased_quantities.items():
+    print(f"Total quantity of {symbol} purchased on or after 2022-06-02: {quantity}")     
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
